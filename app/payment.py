@@ -1,19 +1,21 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import random
 
 payment_router = APIRouter()
 
-class PaymentResult(BaseModel):
-    message: str
-    access_granted: bool
+class PaymentRequest(BaseModel):
+    amount: float
+    currency: str
+    source: str  # Normally a token from Stripe.js
+    description: str
 
-@payment_router.post("/purchase")
-def purchase_day_pass():
-    # Simulate successful payment
-    success = random.choice([True, True, True, False])  # 75% chance of success
-    if success:
-        return PaymentResult(message="Payment successful. Access granted for 24 hours.", access_granted=True)
-    else:
-        return PaymentResult(message="Payment failed. Please try again.", access_granted=False)
-
+@payment_router.post("/charge")
+def create_charge(payment_request: PaymentRequest):
+    # In real life, integrate with Stripe API here.
+    if payment_request.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be greater than zero.")
+    
+    return {
+        "status": "success",
+        "message": f"Charged {payment_request.amount} {payment_request.currency} for {payment_request.description}"
+    }
