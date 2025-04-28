@@ -26,8 +26,8 @@ def create_access_token(username: str):
 
 @auth_router.post("/register")
 def register(user: User):
-    if user.username in fake_users_db:
-        raise HTTPException(status_code=400, detail="Username already registered.")
+    # if user.username in fake_users_db:
+    #     raise HTTPException(status_code=400, detail="Username already registered.")
     hashed_password = pwd_context.hash(user.password)
     fake_users_db[user.username] = hashed_password
     return {"message": "User registered successfully."}
